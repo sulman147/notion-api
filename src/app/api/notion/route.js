@@ -18,42 +18,43 @@
 
 //   return Response.json(data.results); // 👈 This returns all data directly
 // }
-
 import { NextResponse } from "next/server";
 import { Client } from "@notionhq/client";
 
-export async function GET(request) {
+export async function GET() {
   const notion = new Client({
-    auth: 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,
+    auth: "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",
   });
 
   try {
+    const databaseId = "1289fe4abad98080b910f08a0d323cce";
+
     const response = await notion.databases.query({
-      database_id: "1289fe4abad98080b910f08a0d323cce",
+      database_id: databaseId,
     });
 
-    // Return response with CORS headers
-    return new NextResponse(JSON.stringify(response), {
+    return NextResponse.json(response, {
       headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*", // allow from any domain
-        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET",
       },
     });
   } catch (error) {
-    console.error("Notion API error:", error);
-    return new NextResponse(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
-      },
-    });
+    console.error("Detailed Notion API error:", error);
+    return NextResponse.json(
+      { error: error.message },
+      {
+        status: 500,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "application/json",
+        },
+      }
+    );
   }
 }
 
-// Handle preflight OPTIONS request (CORS)
-export async function OPTIONS(request) {
+export async function OPTIONS() {
   return new NextResponse(null, {
     status: 204,
     headers: {
